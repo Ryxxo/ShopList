@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('{{ url_for('static', filename='service-worker.js') }}').then(function(registration) {
+            console.log('ServiceWorker registrado con éxito:', registration);
+          }, function(error) {
+            console.log('Error al registrar el ServiceWorker:', error);
+          });
+        });
+      }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lista de Compras</h1>
+        </header>
+
+        <!-- Formulario para agregar un nuevo producto -->
+        <section class="form-section">
+            <h2>Agregar Producto</h2>
+            <form action="/agregar" method="POST">
+                <label for="nombre">Producto:</label>
+                <input type="text" name="nombre" required>
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" name="cantidad" required>
+                <label for="precio">Precio:</label>
+                <input type="number" name="precio" required>
+                <button type="submit">Agregar</button>
+            </form>
+        </section>
+
+        <!-- Mostrar productos en la lista -->
+        <section class="product-list">
+            <h2>Productos en la lista:</h2>
+            <ul>
+            {% for producto in productos %}
+                <li>
+                    <div class="product-info">
+                        <span class="product-name">{{ producto["Nombre del Producto"] }}</span>
+                        <span class="product-details">Cantidad: {{ producto["Cantidad del Producto"] }}</span>
+                        <span class="product-details">Precio: {{ producto["Precio del Producto"] }}</span>
+                        <span class="product-details">Comprado: {{ producto["Comprado"] }}</span>
+                    </div>
+                    <div class="product-actions">
+                        <form action="/eliminar/{{ producto['Nombre del Producto'] }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                        <form action="/marcar/{{ producto['Nombre del Producto'] }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-success">Marcar como Comprado</button>
+                        </form>
+                        <form action="/desmarcar/{{ producto['Nombre del Producto'] }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-info">Desmarcar como Comprado</button>
+                        </form>
+                        <form action="/actualizar/{{ producto['Nombre del Producto'] }}" method="POST" style="display:inline;">
+                            <input type="number" name="cantidad" placeholder="Nueva Cantidad">
+                            <input type="number" name="precio" placeholder="Nuevo Precio">
+                            <button type="submit" class="btn btn-warning">Actualizar</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Formulario para borrar toda la lista -->
+        <section class="clear-list">
+            <form action="/borrar_lista" method="POST">
+                <button type="submit" class="btn btn-danger">Borrar Toda la Lista</button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>
